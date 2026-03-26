@@ -1,0 +1,6 @@
+.git
+.gemini
+Dockerfile
+docker-compose.yml
+node_modules
+*.md

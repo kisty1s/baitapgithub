@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Man City Head Soccer – Etihad Stadium</title>
+  <meta name="description" content="Play Head Soccer with Manchester City theme! Choose your MCFC hero and dominate the pitch at the Etihad." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- MENU SCREEN -->
+  <div id="screen-menu" class="screen active">
+    <div class="menu-bg-overlay"></div>
+    <canvas id="stadiumCanvas" class="stadium-canvas"></canvas>
+    <div class="menu-particles" id="particles"></div>
+
+    <!-- COMMAND CENTER PANEL -->
+    <div class="cmd-panel">
+
+      <!-- LEFT: Hero Preview - pops out over top border -->
+      <div class="cmd-hero">
+        <div class="hero-popout-glow"></div>
+        <canvas id="heroCanvas" width="240" height="320" class="hero-canvas"></canvas>
+        <div class="hero-name" id="hero-name">DE BRUYNE</div>
+        <div class="hero-special" id="hero-special">🌀 CURVE SHOT</div>
+      </div>
+
+      <!-- CENTER DIVIDER -->
+      <div class="cmd-divider"></div>
+
+      <!-- CENTER: Branding + Select + Actions -->
+      <div class="cmd-center">
+        <div class="cmd-top">
+          <div class="menu-crest">
+            <img src="https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg" alt="Man City Logo" class="main-logo">
+          </div>
+          <h1 class="menu-title">HEADSOCCER</h1>
+          <p class="menu-sub">MANCHESTER CITY EDITION</p>
+          <p class="menu-tagline">"CHAMPIONS OF ENGLAND"</p>
+        </div>
+
+        <div class="player-select">
+          <h2 class="select-title">SELECT YOUR CITY HERO</h2>
+          <div class="player-cards" id="player-cards"></div>
+        </div>
+
+        <div class="difficulty-select">
+          <h2 class="select-title">MATCH DIFFICULTY</h2>
+          <div class="difficulty-options" id="difficulty-options"></div>
+        </div>
+
+        <div class="cmd-actions">
+          <button class="btn btn-primary btn-kickoff" id="btn-play" onclick="startGame()">
+            <span>⚽ KICK OFF</span>
+          </button>
+          <button class="btn btn-secondary" onclick="showHowToPlay()">
+            <span>📋 HOW TO PLAY</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- CENTER DIVIDER -->
+      <div class="cmd-divider"></div>
+
+      <!-- RIGHT: Quick Stats -->
+      <div class="cmd-stats">
+        <div class="quick-stats-header">PLAYER PROFILE</div>
+        <div class="quick-stats-ovr">
+          <span class="ovr-value" id="qs-ovr">91</span>
+          <span class="ovr-label">OVR</span>
+        </div>
+        <div class="quick-stat-row"><span class="qs-label">PAC</span><div class="qs-bar"><div class="qs-bar-fill" id="qs-pac-bar"></div></div><span class="qs-val" id="qs-pac-val">88</span></div>
+        <div class="quick-stat-row"><span class="qs-label">SHO</span><div class="qs-bar"><div class="qs-bar-fill" id="qs-sho-bar"></div></div><span class="qs-val" id="qs-sho-val">87</span></div>
+        <div class="quick-stat-row"><span class="qs-label">PAS</span><div class="qs-bar"><div class="qs-bar-fill" id="qs-pas-bar"></div></div><span class="qs-val" id="qs-pas-val">94</span></div>
+        <div class="quick-stat-row"><span class="qs-label">DRI</span><div class="qs-bar"><div class="qs-bar-fill" id="qs-dri-bar"></div></div><span class="qs-val" id="qs-dri-val">88</span></div>
+        <div class="quick-stat-row"><span class="qs-label">DEF</span><div class="qs-bar"><div class="qs-bar-fill" id="qs-def-bar"></div></div><span class="qs-val" id="qs-def-val">64</span></div>
+        <div class="quick-stat-row"><span class="qs-label">PHY</span><div class="qs-bar"><div class="qs-bar-fill" id="qs-phy-bar"></div></div><span class="qs-val" id="qs-phy-val">78</span></div>
+        <button class="btn-view-card" onclick="showPlayerCard(selectedPlayer)">VIEW CARD 🃏</button>
+      </div>
+    </div>
+
+    <!-- FOOTER: Always at bottom, outside panel -->
+    <div class="menu-footer">
+      <span>🏆 Man City FC • Est. 1880 • Etihad Stadium</span>
+      <span id="hs-display" style="color:var(--city-gold);font-weight:bold;"></span>
+      <span id="menu-rank-display" style="color:#adf;font-size:0.85rem;"></span>
+      <button id="vol-toggle" onclick="toggleVolume()" title="Toggle Sound" class="vol-btn">🔊</button>
+    </div>
+  </div>
+
+  <!-- ===== FC MOBILE PLAYER CARD MODAL ===== -->
+  <div id="player-modal" class="modal" onclick="closePlayerModal(event)">
+    <div class="fc-card" id="fc-card">
+      <div class="fc-card-shine"></div>
+      <div class="fc-card-content">
+        <div class="fc-card-header">
+          <div class="fc-header-left">
+            <div class="fc-ovr" id="fc-ovr">91</div>
+            <div class="fc-pos" id="fc-pos">CAM</div>
+          </div>
+          <div class="fc-header-right">
+            <img class="fc-club-logo" src="https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg" alt="MCFC">
+            <img class="fc-nation-flag" id="fc-flag" src="https://flagcdn.com/be.svg" alt="Nation">
+          </div>
+        </div>
+        <div class="fc-photo-wrap">
+          <img class="fc-player-photo" id="fc-photo" src="" alt="Player Photo" onerror="this.style.display='none'; document.getElementById('fc-photo-fallback').style.display='block'">
+          <canvas id="fc-photo-fallback" width="160" height="180" style="display:none;" class="fc-player-canvas"></canvas>
+        </div>
+        <div class="fc-name" id="fc-card-name">DE BRUYNE</div>
+        <div class="fc-special-badge" id="fc-special-badge">🌀 CURVE SHOT</div>
+        <div class="fc-stats-grid">
+          <div class="fc-stat"><span class="fc-sv" id="fc-pac">88</span><span class="fc-sk">PAC</span></div>
+          <div class="fc-stat"><span class="fc-sv" id="fc-sho">87</span><span class="fc-sk">SHO</span></div>
+          <div class="fc-stat"><span class="fc-sv" id="fc-pas">94</span><span class="fc-sk">PAS</span></div>
+          <div class="fc-stat"><span class="fc-sv" id="fc-dri">88</span><span class="fc-sk">DRI</span></div>
+          <div class="fc-stat"><span class="fc-sv" id="fc-def">64</span><span class="fc-sk">DEF</span></div>
+          <div class="fc-stat"><span class="fc-sv" id="fc-phy">78</span><span class="fc-sk">PHY</span></div>
+        </div>
+      </div>
+      <button class="fc-select-btn" id="fc-select-btn" onclick="selectFromCard()">✓ SELECT THIS PLAYER</button>
+      <button class="fc-close-btn" onclick="closePlayerModal()">✕</button>
+    </div>
+  </div>
+
+  <!-- HOW TO PLAY SCREEN -->
+  <div id="screen-howtoplay" class="screen">
+    <div class="menu-bg-overlay"></div>
+    <div class="howto-container">
+      <h2 class="howto-title">🎮 HOW TO PLAY</h2>
+      <div class="controls-grid">
+        <div class="control-card"><div class="control-icon">🏃</div><div class="control-key">← →</div><div class="control-desc">Move Player</div></div>
+        <div class="control-card"><div class="control-icon">🦘</div><div class="control-key">↑ / W</div><div class="control-desc">Jump</div></div>
+        <div class="control-card"><div class="control-icon">⚽</div><div class="control-key">Space</div><div class="control-desc">Power Kick / Special Skill</div></div>
+        <div class="control-card"><div class="control-icon">💨</div><div class="control-key">X</div><div class="control-desc">Dash</div></div>
+      </div>
+      <div class="howto-rules">
+        <p>🏆 First to <strong>5 goals</strong> wins the match!</p>
+        <p>⏱ 90 second game time</p>
+        <p>🎯 <strong>SKILLS:</strong> Hold <strong>SPACE</strong> to charge and release near the ball!</p>
+        <p>💥 <strong>HAALAND:</strong> Cannon | 🌀 <strong>KDB:</strong> Curve | ⚡ <strong>FODEN:</strong> Sprint | 🎯 <strong>SILVA:</strong> Lock-on</p>
+      </div>
+      <button class="btn btn-primary" onclick="showMenu()">← BACK TO MENU</button>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="screen-game" class="screen">
+    <div class="hud">
+      <div class="hud-team hud-left">
+        <div class="hud-meta">
+          <span class="hud-label">YOU</span>
+          <span class="hud-name" id="hud-player-name">DE BRUYNE</span>
+        </div>
+        <span class="hud-score" id="score-player">0</span>
+      </div>
+      <div class="hud-center">
+        <div class="hud-time" id="hud-time">90</div>
+        <div class="hud-vs">VS</div>
+        <div class="hud-level" id="hud-level">⭐ LEVEL 1</div>
+        <div class="hud-special" id="special-badge"></div>
+        <div class="cooldown-container"><div id="cooldown-bar" class="cooldown-bar"></div></div>
+      </div>
+      <div class="hud-team hud-right">
+        <span class="hud-score" id="score-ai">0</span>
+        <div class="hud-meta">
+          <span class="hud-label">AI OPPONENT</span>
+          <span class="hud-name" id="hud-ai-name">AI</span>
+        </div>
+      </div>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <div id="goal-flash" class="goal-flash"></div>
+    <button class="btn-pause" id="btn-pause" onclick="togglePause()">⏸</button>
+  </div>
+
+  <!-- PAUSE SCREEN -->
+  <div id="screen-pause" class="screen">
+    <div class="menu-bg-overlay" style="opacity:0.85"></div>
+    <div class="pause-container">
+      <h2 class="pause-title">⏸ PAUSED</h2>
+      <button class="btn btn-primary" onclick="togglePause()">▶ RESUME</button>
+      <button class="btn btn-secondary" onclick="restartGame()">🔄 RESTART</button>
+      <button class="btn btn-outline" onclick="goToMenu()">🏠 MAIN MENU</button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="screen-result" class="screen">
+    <div class="menu-bg-overlay"></div>
+    <div class="result-container">
+      <div class="result-trophy" id="result-trophy">🏆</div>
+      <h2 class="result-title" id="result-title">FULL TIME!</h2>
+      <div class="result-scoreline" id="result-scoreline">3 – 1</div>
+      <p class="result-msg" id="result-msg">CITY WON!</p>
+      <div class="result-stars" id="result-stars"></div>
+      <button class="btn btn-primary" onclick="restartGame()">🔄 PLAY AGAIN</button>
+      <button class="btn btn-outline" onclick="goToMenu()">🏠 MAIN MENU</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+  <script>
+    // Parallax mouse tracking for menu
+    document.addEventListener('mousemove', (e) => {
+      menuParallaxX = (e.clientX / window.innerWidth - 0.5) * 30;
+      menuParallaxY = (e.clientY / window.innerHeight - 0.5) * 15;
+      const layout = document.querySelector('.menu-layout');
+      if (layout && document.getElementById('screen-menu').classList.contains('active')) {
+        layout.style.transform = `translate(${menuParallaxX * 0.15}px, ${menuParallaxY * 0.1}px)`;
+        const sc = document.getElementById('stadiumCanvas');
+        if (sc) sc.style.transform = `translate(${-menuParallaxX * 0.2}px, ${-menuParallaxY * 0.12}px)`;
+      }
+    });
+    // Start BGM + update highscore on first click
+    document.addEventListener('click', function initAudio() {
+      startBGM();
+      const hs = parseInt(localStorage.getItem('mancity_hs') || '0', 10);
+      const el = document.getElementById('hs-display');
+      if (el && hs > 0) el.textContent = `🏅 BEST: ${hs} WINS`;
+      document.removeEventListener('click', initAudio);
+    }, { once: true });
+  </script>
+</body>
+</html>

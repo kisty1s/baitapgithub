@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  mancity-soccer:
+    build: .
+    image: an111/mancity-headsoccer:latest
+    container_name: mancity-game-pro
+    ports:
+      - "8082:80"
+    restart: always
