@@ -23,4 +23,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: an111/mancity-headsoccer:latest
+          tags: |
+            an111/mancity-headsoccer:latest
+            an111/springboot-app:latest
